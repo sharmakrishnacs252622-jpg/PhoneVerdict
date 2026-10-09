@@ -7,6 +7,17 @@ RUN mvn clean package -DskipTests
 
 FROM eclipse-temurin:21-jre
 WORKDIR /app
+
 COPY --from=build /app/target/*.jar app.jar
+
+# Install TiDB CA certificate into Java truststore
+COPY certs/isrgrootx1.pem /tmp/tidb-ca.pem
+RUN keytool -importcert -noprompt -trustcacerts \
+    -alias tidb-ca \
+    -file /tmp/tidb-ca.pem \
+    -keystore "$JAVA_HOME/lib/security/cacerts" \
+    -storepass changeit \
+    && rm /tmp/tidb-ca.pem
+
 EXPOSE 10000
 CMD ["sh", "-c", "java -Dserver.port=${PORT:-10000} -jar app.jar"]
