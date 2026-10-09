@@ -1,0 +1,6 @@
+target/
+mysql-data/
+.idea/
+*.iml
+.env
+application-local.properties

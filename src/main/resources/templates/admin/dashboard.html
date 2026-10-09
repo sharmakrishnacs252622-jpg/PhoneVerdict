@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - PhoneVerdict</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <!-- Custom Theme CSS -->
+    <link th:href="@{/css/style.css}" rel="stylesheet">
+</head>
+<body class="bg-light">
+
+    <!-- Header -->
+    <div th:replace="~{fragments/header :: header}"></div>
+
+    <!-- Admin Header -->
+    <div class="admin-header">
+        <div class="container d-flex flex-wrap justify-content-between align-items-center gap-3">
+            <div>
+                <span class="badge bg-warning text-dark px-3 py-1 rounded-pill mb-2 fw-semibold">Administration Console</span>
+                <h1 class="mb-0 text-white">System Dashboard</h1>
+            </div>
+            <div class="d-flex gap-2">
+                <a th:href="@{/admin/phones/add}" class="btn btn-primary-custom">
+                    <i class="bi bi-plus-circle me-1"></i> Add Smartphone
+                </a>
+                <a th:href="@{/admin/reviews}" class="btn btn-outline-light rounded-pill px-3">
+                    <i class="bi bi-chat-left-dots me-1"></i> Moderate Reviews
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Admin Sub-Navigation -->
+    <div class="bg-white border-bottom shadow-sm mb-4">
+        <div class="container">
+            <ul class="nav nav-pills py-2 gap-2">
+                <li class="nav-item">
+                    <a class="nav-link active bg-primary" th:href="@{/admin}"><i class="bi bi-speedometer2 me-1"></i> Dashboard</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-dark" th:href="@{/admin/phones}"><i class="bi bi-phone me-1"></i> Manage Phones</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-dark" th:href="@{/admin/reviews}">
+                        <i class="bi bi-chat-quote me-1"></i> Reviews
+                        <span class="badge bg-danger rounded-pill ms-1" th:if="${pendingReviewCount > 0}" th:text="${pendingReviewCount}">2</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-dark" th:href="@{/admin/users}"><i class="bi bi-people me-1"></i> Registered Users</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="container mb-5">
+        <!-- 4 Stat Cards Row -->
+        <div class="row g-4 mb-4">
+            <div class="col-lg-3 col-sm-6">
+                <div class="stat-card">
+                    <div class="stat-icon blue"><i class="bi bi-phone"></i></div>
+                    <div class="stat-value" th:text="${totalPhones}">12</div>
+                    <div class="stat-label">Total Smartphones</div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-sm-6">
+                <div class="stat-card">
+                    <div class="stat-icon green"><i class="bi bi-people"></i></div>
+                    <div class="stat-value" th:text="${totalUsers}">4</div>
+                    <div class="stat-label">Registered Users</div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-sm-6">
+                <div class="stat-card">
+                    <div class="stat-icon purple"><i class="bi bi-chat-dots"></i></div>
+                    <div class="stat-value" th:text="${totalReviews}">10</div>
+                    <div class="stat-label">Total Reviews</div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-sm-6">
+                <div class="stat-card">
+                    <div class="stat-icon orange"><i class="bi bi-star"></i></div>
+                    <div class="stat-value" th:text="${averageRating} + ' / 5'">4.7 / 5</div>
+                    <div class="stat-label">Average Rating</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pending Moderation Alert Banner -->
+        <div class="alert alert-warning d-flex align-items-center justify-content-between p-3 rounded-3 shadow-sm mb-4" th:if="${pendingReviewCount > 0}">
+            <div class="d-flex align-items-center gap-2">
+                <i class="bi bi-exclamation-triangle-fill fs-4 text-warning"></i>
+                <div>
+                    <strong>Action Required:</strong> You have <span th:text="${pendingReviewCount}">2</span> user review(s) pending administrative moderation.
+                </div>
+            </div>
+            <a th:href="@{/admin/reviews}" class="btn btn-sm btn-warning text-dark fw-bold rounded-pill px-3">Review Queue</a>
+        </div>
+
+        <!-- Recent Reviews Table -->
+        <div class="admin-table">
+            <div class="p-3 bg-white border-bottom d-flex justify-content-between align-items-center">
+                <h5 class="mb-0 fw-bold"><i class="bi bi-clock-history me-2 text-primary"></i> Recent Reviews</h5>
+                <a th:href="@{/admin/reviews}" class="btn btn-sm btn-outline-primary rounded-pill">View All Reviews</a>
+            </div>
+            <div class="table-responsive">
+                <table class="table mb-0 align-middle">
+                    <thead>
+                        <tr>
+                            <th>Phone</th>
+                            <th>Author</th>
+                            <th>Rating</th>
+                            <th>Title &amp; Comment</th>
+                            <th>Status</th>
+                            <th>Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="r : ${recentReviews}">
+                            <td class="fw-bold" th:text="${r.phone.brand + ' ' + r.phone.model}">Galaxy S25 Ultra</td>
+                            <td th:text="${r.user != null ? r.user.name : 'Anonymous'}">Rahul Sharma</td>
+                            <td>
+                                <span class="badge bg-warning text-dark"><i class="bi bi-star-fill"></i> <span th:text="${r.rating}">5</span></span>
+                            </td>
+                            <td>
+                                <div class="fw-semibold text-truncate" style="max-width: 250px;" th:text="${r.title}">Title</div>
+                                <small class="text-muted text-truncate d-block" style="max-width: 320px;" th:text="${r.comment}">Comment</small>
+                            </td>
+                            <td>
+                                <span th:if="${r.status.name() == 'APPROVED'}" class="badge-approved">Approved</span>
+                                <span th:if="${r.status.name() == 'PENDING'}" class="badge-pending">Pending</span>
+                                <span th:if="${r.status.name() == 'REJECTED'}" class="badge-rejected">Rejected</span>
+                            </td>
+                            <td class="small text-secondary" th:text="${#temporals.format(r.createdAt, 'dd MMM yyyy')}">08 Oct 2025</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div th:replace="~{fragments/footer :: footer}"></div>
+
+    <!-- Bootstrap 5 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom JS -->
+    <script th:src="@{/js/main.js}"></script>
+</body>
+</html>

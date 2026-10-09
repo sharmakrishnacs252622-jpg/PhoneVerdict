@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comparison Verdict Results - PhoneVerdict</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <!-- Custom Theme CSS -->
+    <link th:href="@{/css/style.css}" rel="stylesheet">
+</head>
+<body>
+
+    <!-- Header -->
+    <div th:replace="~{fragments/header :: header}"></div>
+
+    <!-- Page Header -->
+    <div class="page-header text-center">
+        <div class="container">
+            <h1>Head-to-Head Phone Comparison</h1>
+            <p>Comprehensive technical breakdown and automated winner evaluation</p>
+        </div>
+    </div>
+
+    <div class="container mb-5">
+        <!-- Comparison Table Card -->
+        <div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-5">
+            <div class="table-responsive">
+                <table class="table comparison-table mb-0">
+                    <thead>
+                        <tr>
+                            <th style="width: 20%;" class="text-start ps-4">Specification</th>
+                            <th th:each="phone, stat : ${phones}" class="text-center" style="width: 26%;">
+                                <div class="compare-phone-header">
+                                    <img th:src="${phone.imageUrl}" th:alt="${phone.model}" class="img-fluid rounded mb-2">
+                                    <div class="brand-badge" th:text="${phone.brand}">Brand</div>
+                                    <h5 class="fw-bold text-white mb-1" th:text="${phone.model}">Model</h5>
+                                    <div class="text-primary-light fw-bold" th:text="'₹' + ${#numbers.formatDecimal(phone.price, 1, 'COMMA', 0, 'POINT')}">₹79,999</div>
+                                </div>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Price -->
+                        <tr>
+                            <td class="ps-4">Price (Lower is Better)</td>
+                            <td th:each="phone, stat : ${phones}"
+                                th:classappend="${comparison.winners.get('price') == stat.index} ? 'winner-cell' : ''">
+                                <span th:if="${comparison.winners.get('price') == stat.index}">🏆 </span>
+                                <span th:text="'₹' + ${#numbers.formatDecimal(phone.price, 1, 'COMMA', 0, 'POINT')}">₹79,999</span>
+                            </td>
+                        </tr>
+
+                        <!-- Overall Verdict Score -->
+                        <tr class="table-primary">
+                            <td class="ps-4 fw-bold">Overall Verdict Score</td>
+                            <td th:each="phone, stat : ${phones}"
+                                th:classappend="${comparison.winners.get('overallScore') == stat.index} ? 'winner-cell' : ''">
+                                <span class="badge bg-primary px-3 py-2 rounded-pill fs-6 fw-bold">
+                                    <span th:if="${comparison.winners.get('overallScore') == stat.index}">🏆 </span>
+                                    <span th:text="${phone.overallScore} + ' / 10'">9.5 / 10</span>
+                                </span>
+                            </td>
+                        </tr>
+
+                        <!-- User Rating -->
+                        <tr>
+                            <td class="ps-4">Community Rating</td>
+                            <td th:each="phone : ${phones}">
+                                <div class="star-rating d-inline-block">
+                                    <i class="bi bi-star-fill"></i>
+                                    <span class="text-dark fw-bold ms-1" th:text="${phone.averageUserRating}">4.8</span>
+                                    <span class="text-muted small" th:text="'(' + ${phone.reviewCount} + ')'">(12)</span>
+                                </div>
+                            </td>
+                        </tr>
+
+                        <!-- Processor / Performance -->
+                        <tr>
+                            <td class="ps-4">Processor</td>
+                            <td th:each="phone, stat : ${phones}"
+                                th:classappend="${comparison.winners.get('performance') == stat.index} ? 'winner-cell' : ''">
+                                <span th:if="${comparison.winners.get('performance') == stat.index}">🏆 </span>
+                                <span th:text="${phone.processor}">Processor</span>
+                            </td>
+                        </tr>
+
+                        <!-- RAM -->
+                        <tr>
+                            <td class="ps-4">RAM</td>
+                            <td th:each="phone, stat : ${phones}"
+                                th:classappend="${comparison.winners.get('ram') == stat.index} ? 'winner-cell' : ''">
+                                <span th:if="${comparison.winners.get('ram') == stat.index}">🏆 </span>
+                                <span th:text="${phone.ram}">12 GB</span>
+                            </td>
+                        </tr>
+
+                        <!-- Storage -->
+                        <tr>
+                            <td class="ps-4">Internal Storage</td>
+                            <td th:each="phone, stat : ${phones}"
+                                th:classappend="${comparison.winners.get('storage') == stat.index} ? 'winner-cell' : ''">
+                                <span th:if="${comparison.winners.get('storage') == stat.index}">🏆 </span>
+                                <span th:text="${phone.storage}">256 GB</span>
+                            </td>
+                        </tr>
+
+                        <!-- Display -->
+                        <tr>
+                            <td class="ps-4">Display &amp; Refresh Rate</td>
+                            <td th:each="phone, stat : ${phones}"
+                                th:classappend="${comparison.winners.get('display') == stat.index} ? 'winner-cell' : ''">
+                                <span th:if="${comparison.winners.get('display') == stat.index}">🏆 </span>
+                                <span th:text="${phone.displaySize + ' ' + phone.panelType + ' (' + phone.refreshRate + ')'}">6.8" 120Hz</span>
+                            </td>
+                        </tr>
+
+                        <!-- Camera -->
+                        <tr>
+                            <td class="ps-4">Main Camera</td>
+                            <td th:each="phone, stat : ${phones}"
+                                th:classappend="${comparison.winners.get('camera') == stat.index} ? 'winner-cell' : ''">
+                                <span th:if="${comparison.winners.get('camera') == stat.index}">🏆 </span>
+                                <span th:text="${phone.mainCamera}">50 MP</span>
+                            </td>
+                        </tr>
+
+                        <!-- Ultra-wide & Telephoto -->
+                        <tr>
+                            <td class="ps-4">Auxiliary Cameras</td>
+                            <td th:each="phone : ${phones}">
+                                <span th:text="${'UW: ' + phone.ultrawideCamera + ' | Tele: ' + phone.telephotoCamera}">Cameras</span>
+                            </td>
+                        </tr>
+
+                        <!-- Battery -->
+                        <tr>
+                            <td class="ps-4">Battery Capacity</td>
+                            <td th:each="phone, stat : ${phones}"
+                                th:classappend="${comparison.winners.get('battery') == stat.index} ? 'winner-cell' : ''">
+                                <span th:if="${comparison.winners.get('battery') == stat.index}">🏆 </span>
+                                <span th:text="${phone.battery}">5000 mAh</span>
+                            </td>
+                        </tr>
+
+                        <!-- Charging -->
+                        <tr>
+                            <td class="ps-4">Charging Speed</td>
+                            <td th:each="phone, stat : ${phones}"
+                                th:classappend="${comparison.winners.get('charging') == stat.index} ? 'winner-cell' : ''">
+                                <span th:if="${comparison.winners.get('charging') == stat.index}">🏆 </span>
+                                <span th:text="${phone.chargingSpeed}">45W</span>
+                            </td>
+                        </tr>
+
+                        <!-- OS -->
+                        <tr>
+                            <td class="ps-4">Operating System</td>
+                            <td th:each="phone : ${phones}" th:text="${phone.os}">Android 15</td>
+                        </tr>
+
+                        <!-- 5G -->
+                        <tr>
+                            <td class="ps-4">5G Connectivity</td>
+                            <td th:each="phone : ${phones}" th:text="${phone.fiveG ? '✓ Supported' : '✗ No'}">Yes</td>
+                        </tr>
+
+                        <!-- Water Resistance -->
+                        <tr>
+                            <td class="ps-4">Water Resistance</td>
+                            <td th:each="phone : ${phones}" th:text="${phone.waterResistance}">IP68</td>
+                        </tr>
+
+                        <!-- Action Link -->
+                        <tr>
+                            <td class="ps-4">Details</td>
+                            <td th:each="phone : ${phones}">
+                                <a th:href="@{/phones/{id}(id=${phone.id})}" class="btn btn-sm btn-outline-primary rounded-pill px-3">
+                                    Full Specs <i class="bi bi-arrow-right"></i>
+                                </a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Final Comparison Verdict Section -->
+        <div class="comparison-winner">
+            <span class="badge bg-warning text-dark px-3 py-2 rounded-pill fw-bold mb-2">
+                <i class="bi bi-award-fill me-1"></i> FINAL COMPARISON VERDICT
+            </span>
+            <div class="winner-name mt-2 mb-2">
+                🏆 Winner: <span th:text="${phones[comparison.overallWinnerIndex].brand + ' ' + phones[comparison.overallWinnerIndex].model}">Phone Name</span>
+            </div>
+            <p class="lead max-w-75 mx-auto mb-4" th:text="${comparison.verdictText}">
+                Detailed analysis of why one phone outperforms the other based on benchmarks and pricing.
+            </p>
+            <div class="d-flex justify-content-center gap-3">
+                <a th:href="@{/phones/{id}(id=${phones[comparison.overallWinnerIndex].id})}" class="btn btn-light rounded-pill px-4 fw-bold">
+                    View Winner's Details
+                </a>
+                <a th:href="@{/compare}" class="btn btn-outline-light rounded-pill px-4">
+                    New Comparison
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div th:replace="~{fragments/footer :: footer}"></div>
+
+    <!-- Bootstrap 5 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom JS -->
+    <script th:src="@{/js/main.js}"></script>
+</body>
+</html>

@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PhoneVerdict - Find Your Perfect Smartphone</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <!-- Custom Theme CSS -->
+    <link th:href="@{/css/style.css}" rel="stylesheet">
+</head>
+<body>
+
+    <!-- Header -->
+    <div th:replace="~{fragments/header :: header}"></div>
+
+    <!-- Hero Section -->
+    <section class="hero-section text-center text-lg-start">
+        <div class="container position-relative" style="z-index: 2;">
+            <div class="row align-items-center g-5">
+                <div class="col-lg-7">
+                    <span class="badge bg-primary px-3 py-2 rounded-pill mb-3 fw-semibold">
+                        <i class="bi bi-stars me-1"></i> Smarter Smartphone Decision Engine
+                    </span>
+                    <h1>Find Your Perfect Phone</h1>
+                    <p class="lead">
+                        Compare smartphones, read real user reviews, explore comprehensive benchmarks, and get the unbiased final verdict before you buy.
+                    </p>
+
+                    <!-- Search Bar in Hero -->
+                    <div class="hero-search mx-auto mx-lg-0">
+                        <form th:action="@{/search}" method="get" class="d-flex">
+                            <input type="text" name="q" class="form-control form-control-lg shadow-sm" placeholder="Search by brand, model, or processor...">
+                            <button type="submit" class="btn btn-primary-custom px-4 shadow-sm">
+                                <i class="bi bi-search me-1"></i> Search
+                            </button>
+                        </form>
+                    </div>
+
+                    <div class="d-flex flex-wrap gap-3 justify-content-center justify-content-lg-start">
+                        <a th:href="@{/phones}" class="btn btn-primary-custom">
+                            <i class="bi bi-grid me-2"></i> Explore Phones
+                        </a>
+                        <a th:href="@{/compare}" class="btn btn-outline-custom">
+                            <i class="bi bi-arrow-left-right me-2"></i> Compare Phones
+                        </a>
+                    </div>
+                </div>
+
+                <div class="col-lg-5 text-center d-none d-lg-block">
+                    <div class="position-relative d-inline-block">
+                        <img src="https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=500&auto=format&fit=crop&q=80"
+                             alt="Featured Smartphone" class="img-fluid rounded-4 shadow-xl" style="max-height: 420px; object-fit: cover;">
+                        <div class="position-absolute bottom-0 start-50 translate-middle-x mb-n3 bg-white text-dark p-3 rounded-3 shadow-lg border text-start" style="width: 85%;">
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <span class="fw-bold small text-uppercase text-primary">Verdict Score</span>
+                                <span class="badge bg-success rounded-pill px-2 py-1">9.8 / 10</span>
+                            </div>
+                            <div class="fw-bold">Apple iPhone 16 Pro Max</div>
+                            <small class="text-muted">Top Rated Flagship &amp; Video Leader</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Why PhoneVerdict Feature Highlights -->
+    <section class="section bg-white py-5">
+        <div class="container">
+            <div class="row g-4 text-center">
+                <div class="col-md-3 col-6">
+                    <div class="feature-card">
+                        <div class="feature-icon"><i class="bi bi-chat-heart-fill"></i></div>
+                        <h5>Real User Reviews</h5>
+                        <p>Verified opinions and hands-on impressions from real smartphone owners.</p>
+                    </div>
+                </div>
+                <div class="col-md-3 col-6">
+                    <div class="feature-card">
+                        <div class="feature-icon"><i class="bi bi-shuffle"></i></div>
+                        <h5>Smart Comparisons</h5>
+                        <p>Side-by-side spec comparison with automated winner indicators.</p>
+                    </div>
+                </div>
+                <div class="col-md-3 col-6">
+                    <div class="feature-card">
+                        <div class="feature-icon"><i class="bi bi-cpu-fill"></i></div>
+                        <h5>Full Specifications</h5>
+                        <p>Exhaustive breakdown of cameras, processors, batteries, and screens.</p>
+                    </div>
+                </div>
+                <div class="col-md-3 col-6">
+                    <div class="feature-card">
+                        <div class="feature-icon"><i class="bi bi-award-fill"></i></div>
+                        <h5>Verdict Based Ranking</h5>
+                        <p>Weighted scoring engine delivering clear, unbiased purchasing advice.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Latest Phones Section -->
+    <section class="section section-dark">
+        <div class="container">
+            <div class="d-flex justify-content-between align-items-end mb-4">
+                <div>
+                    <h2 class="section-title">Latest Smartphones</h2>
+                    <p class="section-subtitle mb-0">Newly launched cutting-edge devices in the Indian market</p>
+                </div>
+                <a th:href="@{/phones}" class="btn btn-outline-primary rounded-pill btn-sm px-3">
+                    View All <i class="bi bi-arrow-right ms-1"></i>
+                </a>
+            </div>
+
+            <div class="row g-4">
+                <div class="col-lg-4 col-md-6" th:each="phone : ${latestPhones}">
+                    <div class="phone-card">
+                        <div class="card-img-container">
+                            <img th:src="${phone.imageUrl}" th:alt="${phone.model}">
+                        </div>
+                        <div class="card-body">
+                            <span class="brand-badge" th:text="${phone.brand}">Brand</span>
+                            <h4 class="phone-name" th:text="${phone.model}">Model Name</h4>
+                            <div class="phone-price" th:text="'₹' + ${#numbers.formatDecimal(phone.price, 1, 'COMMA', 0, 'POINT')}">₹69,999</div>
+
+                            <div class="d-flex align-items-center gap-2 mb-2">
+                                <div class="star-rating">
+                                    <i class="bi bi-star-fill text-warning"></i>
+                                    <span class="fw-bold text-dark small" th:text="${phone.averageUserRating}">4.5</span>
+                                </div>
+                                <span class="review-count" th:text="'(' + ${phone.reviewCount} + ' reviews)'">(12 reviews)</span>
+                                <span class="ms-auto badge bg-light text-primary border" th:text="${phone.overallScore} + ' Verdict'">9.2 Verdict</span>
+                            </div>
+
+                            <div class="phone-specs">
+                                <span><i class="bi bi-cpu"></i> <span th:text="${phone.processor}">Processor</span></span><br>
+                                <span><i class="bi bi-memory"></i> <span th:text="${phone.ram + ' / ' + phone.storage}">RAM/ROM</span></span>
+                                <span><i class="bi bi-battery-charging"></i> <span th:text="${phone.battery}">5000 mAh</span></span>
+                            </div>
+
+                            <div class="card-actions">
+                                <a th:href="@{/phones/{id}(id=${phone.id})}" class="btn btn-primary-custom">
+                                    View Details
+                                </a>
+                                <button type="button" class="btn btn-outline-secondary"
+                                        th:onclick="addToCompare([[${phone.id}]], [[${phone.model}]], [[${phone.brand}]], [[${phone.imageUrl}]])">
+                                    <i class="bi bi-plus-lg"></i> Compare
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Top Rated Section -->
+    <section class="section bg-white">
+        <div class="container">
+            <div class="d-flex justify-content-between align-items-end mb-4">
+                <div>
+                    <h2 class="section-title">Highest Rated Verdicts</h2>
+                    <p class="section-subtitle mb-0">Smartphones with top weighted performance, camera &amp; battery scores</p>
+                </div>
+                <a th:href="@{/phones(sort='rating')}" class="btn btn-outline-primary rounded-pill btn-sm px-3">
+                    View Rankings <i class="bi bi-arrow-right ms-1"></i>
+                </a>
+            </div>
+
+            <div class="row g-4">
+                <div class="col-lg-4 col-md-6" th:each="phone : ${topRatedPhones}">
+                    <div class="phone-card">
+                        <div class="card-img-container position-relative">
+                            <span class="position-absolute top-0 end-0 m-3 badge bg-success rounded-pill px-3 py-2">
+                                <i class="bi bi-trophy-fill me-1"></i> <span th:text="${phone.overallScore}">9.5</span>/10
+                            </span>
+                            <img th:src="${phone.imageUrl}" th:alt="${phone.model}">
+                        </div>
+                        <div class="card-body">
+                            <span class="brand-badge" th:text="${phone.brand}">Brand</span>
+                            <h4 class="phone-name" th:text="${phone.model}">Model Name</h4>
+                            <div class="phone-price" th:text="'₹' + ${#numbers.formatDecimal(phone.price, 1, 'COMMA', 0, 'POINT')}">₹79,999</div>
+
+                            <div class="d-flex align-items-center gap-2 mb-2">
+                                <div class="star-rating">
+                                    <i class="bi bi-star-fill text-warning"></i>
+                                    <span class="fw-bold text-dark small" th:text="${phone.averageUserRating}">4.8</span>
+                                </div>
+                                <span class="review-count" th:text="'(' + ${phone.reviewCount} + ' reviews)'">(8 reviews)</span>
+                            </div>
+
+                            <div class="phone-specs">
+                                <span><i class="bi bi-camera"></i> <span th:text="${phone.mainCamera}">50 MP</span></span><br>
+                                <span><i class="bi bi-phone"></i> <span th:text="${phone.displaySize + ' ' + phone.refreshRate}">6.7" 120Hz</span></span>
+                            </div>
+
+                            <div class="card-actions">
+                                <a th:href="@{/phones/{id}(id=${phone.id})}" class="btn btn-primary-custom">
+                                    View Details
+                                </a>
+                                <button type="button" class="btn btn-outline-secondary"
+                                        th:onclick="addToCompare([[${phone.id}]], [[${phone.model}]], [[${phone.brand}]], [[${phone.imageUrl}]])">
+                                    <i class="bi bi-plus-lg"></i> Compare
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Category Highlights Section (Camera & Battery) -->
+    <section class="section section-dark">
+        <div class="container">
+            <h2 class="section-title text-center mb-2">Explore By Category</h2>
+            <p class="section-subtitle text-center">Specially curated lists tailored to your lifestyle</p>
+
+            <div class="row g-4 mt-2">
+                <!-- Best Camera Column -->
+                <div class="col-lg-6">
+                    <div class="card border-0 shadow-sm rounded-4 p-4 h-100 bg-white">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <div class="d-flex align-items-center gap-2">
+                                <div class="bg-primary bg-opacity-10 text-primary p-2 rounded-3 fs-4">
+                                    <i class="bi bi-camera-fill"></i>
+                                </div>
+                                <h4 class="mb-0 fw-bold">Best For Photography</h4>
+                            </div>
+                            <a th:href="@{/categories/best-camera}" class="btn btn-sm btn-outline-primary rounded-pill">View All</a>
+                        </div>
+                        <p class="text-secondary small mb-4">Smartphones with pro-grade sensors, periscope optical zoom, and superior computational imaging.</p>
+
+                        <div class="d-flex flex-column gap-3">
+                            <div class="d-flex align-items-center gap-3 p-2 rounded-3 border" th:each="phone : ${bestCamera}">
+                                <img th:src="${phone.imageUrl}" th:alt="${phone.model}" class="phone-img-small">
+                                <div class="flex-grow-1">
+                                    <h6 class="mb-0 fw-bold"><a th:href="@{/phones/{id}(id=${phone.id})}" class="text-dark" th:text="${phone.brand + ' ' + phone.model}">Phone</a></h6>
+                                    <small class="text-muted" th:text="${phone.mainCamera} + ' | ' + ${phone.telephotoCamera}">Camera Info</small>
+                                </div>
+                                <span class="badge bg-primary rounded-pill px-3 py-2" th:text="${phone.cameraScore} + ' Cam'">9.6 Cam</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Best Battery Column -->
+                <div class="col-lg-6">
+                    <div class="card border-0 shadow-sm rounded-4 p-4 h-100 bg-white">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <div class="d-flex align-items-center gap-2">
+                                <div class="bg-success bg-opacity-10 text-success p-2 rounded-3 fs-4">
+                                    <i class="bi bi-battery-charging"></i>
+                                </div>
+                                <h4 class="mb-0 fw-bold">Best Battery Endurance</h4>
+                            </div>
+                            <a th:href="@{/categories/best-battery}" class="btn btn-sm btn-outline-success rounded-pill">View All</a>
+                        </div>
+                        <p class="text-secondary small mb-4">High capacity 5500-6000mAh cells combined with ultra-fast 100W+ charging speeds.</p>
+
+                        <div class="d-flex flex-column gap-3">
+                            <div class="d-flex align-items-center gap-3 p-2 rounded-3 border" th:each="phone : ${bestBattery}">
+                                <img th:src="${phone.imageUrl}" th:alt="${phone.model}" class="phone-img-small">
+                                <div class="flex-grow-1">
+                                    <h6 class="mb-0 fw-bold"><a th:href="@{/phones/{id}(id=${phone.id})}" class="text-dark" th:text="${phone.brand + ' ' + phone.model}">Phone</a></h6>
+                                    <small class="text-muted" th:text="${phone.battery} + ' | ' + ${phone.chargingSpeed}">Battery Info</small>
+                                </div>
+                                <span class="badge bg-success rounded-pill px-3 py-2" th:text="${phone.batteryScore} + ' Batt'">9.8 Batt</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Recent Community Reviews -->
+    <section class="section bg-white">
+        <div class="container">
+            <div class="text-center mb-5">
+                <h2 class="section-title">Latest Community Reviews</h2>
+                <p class="section-subtitle">Real experiences and feedback shared by tech enthusiasts</p>
+            </div>
+
+            <div class="row g-4">
+                <div class="col-lg-4 col-md-6" th:each="review : ${recentReviews}">
+                    <div class="review-card h-100 d-flex flex-column">
+                        <div class="review-header">
+                            <div>
+                                <span class="badge bg-light text-primary border mb-2" th:text="${review.phone.brand + ' ' + review.phone.model}">Phone Model</span>
+                                <div class="star-rating">
+                                    <span th:each="i : ${#numbers.sequence(1, review.rating)}"><i class="bi bi-star-fill"></i></span>
+                                    <span th:if="${review.rating < 5}" th:each="i : ${#numbers.sequence(review.rating + 1, 5)}"><i class="bi bi-star"></i></span>
+                                </div>
+                            </div>
+                            <span class="verified-badge"><i class="bi bi-patch-check-fill me-1"></i> Verified</span>
+                        </div>
+                        <h5 class="review-title" th:text="${review.title}">Great phone!</h5>
+                        <p class="review-text flex-grow-1" th:text="${review.comment}">Review comment goes here...</p>
+                        <div class="review-meta pt-2 border-top">
+                            <span class="fw-semibold text-dark" th:text="${review.user != null ? review.user.name : 'Anonymous User'}">User Name</span>
+                            <span class="ms-auto" th:text="${#temporals.format(review.createdAt, 'dd MMM yyyy')}">08 Oct 2025</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <div th:replace="~{fragments/footer :: footer}"></div>
+
+    <!-- Bootstrap 5 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom JS -->
+    <script th:src="@{/js/main.js}"></script>
+</body>
+</html>

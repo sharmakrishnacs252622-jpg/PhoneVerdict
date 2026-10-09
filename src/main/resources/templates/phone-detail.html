@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${phone.brand + ' ' + phone.model + ' - Specifications, Reviews & Verdict'}">Phone Details</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <!-- Custom Theme CSS -->
+    <link th:href="@{/css/style.css}" rel="stylesheet">
+</head>
+<body>
+
+    <!-- Header -->
+    <div th:replace="~{fragments/header :: header}"></div>
+
+    <!-- Breadcrumb -->
+    <div class="bg-white border-bottom py-2">
+        <div class="container">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-0 small">
+                    <li class="breadcrumb-item"><a th:href="@{/}" class="text-decoration-none">Home</a></li>
+                    <li class="breadcrumb-item"><a th:href="@{/phones}" class="text-decoration-none">Smartphones</a></li>
+                    <li class="breadcrumb-item active" aria-current="page" th:text="${phone.brand + ' ' + phone.model}">Phone Name</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+
+    <!-- Alert Messages -->
+    <div class="container mt-3" th:if="${successMessage}">
+        <div class="alert alert-success alert-dismissible fade show shadow-sm" role="alert">
+            <i class="bi bi-check-circle-fill me-2"></i> <span th:text="${successMessage}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    </div>
+    <div class="container mt-3" th:if="${errorMessage}">
+        <div class="alert alert-danger alert-dismissible fade show shadow-sm" role="alert">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i> <span th:text="${errorMessage}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    </div>
+
+    <!-- Phone Overview Section -->
+    <section class="section py-4">
+        <div class="container">
+            <div class="bg-white rounded-4 border p-4 p-lg-5 shadow-sm">
+                <div class="row g-5 align-items-center">
+                    <!-- Phone Image -->
+                    <div class="col-lg-5 text-center">
+                        <div class="phone-detail-img shadow-sm border">
+                            <img th:src="${phone.imageUrl}" th:alt="${phone.model}" class="img-fluid">
+                        </div>
+                    </div>
+
+                    <!-- Phone Info & Verdict Snapshot -->
+                    <div class="col-lg-7 phone-detail-info">
+                        <span class="brand-badge fs-6 px-3 py-1" th:text="${phone.brand}">Brand</span>
+                        <h1 class="mt-2 mb-2" th:text="${phone.model}">Galaxy S25 Ultra</h1>
+
+                        <div class="d-flex align-items-center gap-3 mb-3">
+                            <div class="star-rating fs-5">
+                                <i class="bi bi-star-fill text-warning"></i>
+                                <span class="fw-bold text-dark" th:text="${phone.averageUserRating}">4.8</span>
+                            </div>
+                            <span class="text-secondary small" th:text="'(' + ${phone.reviewCount} + ' verified reviews)'">(12 reviews)</span>
+                            <span class="badge bg-light text-secondary border">Release: <span th:text="${phone.releaseDate}">2025-01-22</span></span>
+                        </div>
+
+                        <div class="detail-price" th:text="'₹' + ${#numbers.formatDecimal(phone.price, 1, 'COMMA', 0, 'POINT')}">₹1,34,999</div>
+
+                        <!-- Quick Verdict Card -->
+                        <div class="p-3 rounded-3 mb-4 border d-flex align-items-center gap-3"
+                             th:classappend="${verdict.verdictClass == 'excellent' ? 'bg-success bg-opacity-10 border-success' : 'bg-primary bg-opacity-10 border-primary'}">
+                            <div class="score-badge" th:classappend="${verdict.verdictClass}">
+                                <span th:text="${verdict.overallScore}">9.5</span>
+                            </div>
+                            <div>
+                                <h6 class="mb-1 fw-bold text-dark">Official Verdict</h6>
+                                <p class="mb-0 fw-semibold" th:classappend="${'verdict-text-' + verdict.verdictClass}" th:text="${verdict.verdictText}">
+                                    Excellent — Highly Recommended
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="d-flex flex-wrap gap-3">
+                            <button type="button" class="btn btn-primary-custom px-4"
+                                    th:onclick="addToCompare([[${phone.id}]], [[${phone.model}]], [[${phone.brand}]], [[${phone.imageUrl}]])">
+                                <i class="bi bi-shuffle me-2"></i> Add to Comparison
+                            </button>
+                            <a href="#reviews-section" class="btn btn-outline-secondary px-4 rounded-pill">
+                                <i class="bi bi-chat-text me-2"></i> Read Reviews (<span th:text="${reviews.size()}"></span>)
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Specifications, Verdict & Pros/Cons Section -->
+    <section class="section py-4 bg-light">
+        <div class="container">
+            <div class="row g-4">
+                <!-- Left: Full Specifications Accordion -->
+                <div class="col-lg-7">
+                    <div class="bg-white p-4 rounded-4 border shadow-sm">
+                        <h4 class="fw-bold mb-4"><i class="bi bi-sliders me-2 text-primary"></i> Full Technical Specifications</h4>
+
+                        <div class="accordion" id="specAccordion">
+                            <!-- Display -->
+                            <div class="accordion-item border-0 border-bottom">
+                                <h2 class="accordion-header" id="headingDisplay">
+                                    <button class="accordion-button fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#collapseDisplay" aria-expanded="true">
+                                        <i class="bi bi-aspect-ratio me-2 text-primary"></i> Display
+                                    </button>
+                                </h2>
+                                <div id="collapseDisplay" class="accordion-collapse collapse show">
+                                    <div class="accordion-body">
+                                        <table class="table table-sm spec-table">
+                                            <tr><td>Screen Size</td><td th:text="${phone.displaySize}">6.9 inches</td></tr>
+                                            <tr><td>Resolution</td><td th:text="${phone.resolution}">3120 x 1440 pixels</td></tr>
+                                            <tr><td>Refresh Rate</td><td th:text="${phone.refreshRate}">120Hz</td></tr>
+                                            <tr><td>Panel Type</td><td th:text="${phone.panelType}">Dynamic AMOLED 2X</td></tr>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Performance -->
+                            <div class="accordion-item border-0 border-bottom">
+                                <h2 class="accordion-header" id="headingPerformance">
+                                    <button class="accordion-button fw-bold collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapsePerformance">
+                                        <i class="bi bi-cpu me-2 text-primary"></i> Performance &amp; Hardware
+                                    </button>
+                                </h2>
+                                <div id="collapsePerformance" class="accordion-collapse collapse">
+                                    <div class="accordion-body">
+                                        <table class="table table-sm spec-table">
+                                            <tr><td>Processor</td><td th:text="${phone.processor}">Snapdragon 8 Elite</td></tr>
+                                            <tr><td>GPU</td><td th:text="${phone.gpu}">Adreno 830</td></tr>
+                                            <tr><td>RAM</td><td th:text="${phone.ram}">12 GB</td></tr>
+                                            <tr><td>Storage</td><td th:text="${phone.storage}">256 GB</td></tr>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Camera -->
+                            <div class="accordion-item border-0 border-bottom">
+                                <h2 class="accordion-header" id="headingCamera">
+                                    <button class="accordion-button fw-bold collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseCamera">
+                                        <i class="bi bi-camera me-2 text-primary"></i> Camera System
+                                    </button>
+                                </h2>
+                                <div id="collapseCamera" class="accordion-collapse collapse">
+                                    <div class="accordion-body">
+                                        <table class="table table-sm spec-table">
+                                            <tr><td>Main Camera</td><td th:text="${phone.mainCamera}">200 MP</td></tr>
+                                            <tr><td>Ultra-wide</td><td th:text="${phone.ultrawideCamera}">50 MP</td></tr>
+                                            <tr><td>Telephoto</td><td th:text="${phone.telephotoCamera}">50 MP 5x</td></tr>
+                                            <tr><td>Front Camera</td><td th:text="${phone.frontCamera}">12 MP</td></tr>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Battery & Charging -->
+                            <div class="accordion-item border-0 border-bottom">
+                                <h2 class="accordion-header" id="headingBattery">
+                                    <button class="accordion-button fw-bold collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseBattery">
+                                        <i class="bi bi-battery-charging me-2 text-primary"></i> Battery &amp; Charging
+                                    </button>
+                                </h2>
+                                <div id="collapseBattery" class="accordion-collapse collapse">
+                                    <div class="accordion-body">
+                                        <table class="table table-sm spec-table">
+                                            <tr><td>Battery Capacity</td><td th:text="${phone.battery}">5000 mAh</td></tr>
+                                            <tr><td>Charging Speed</td><td th:text="${phone.chargingSpeed}">45W Wired</td></tr>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Software & Connectivity -->
+                            <div class="accordion-item border-0 border-bottom">
+                                <h2 class="accordion-header" id="headingConnectivity">
+                                    <button class="accordion-button fw-bold collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseConnectivity">
+                                        <i class="bi bi-wifi me-2 text-primary"></i> Software &amp; Connectivity
+                                    </button>
+                                </h2>
+                                <div id="collapseConnectivity" class="accordion-collapse collapse">
+                                    <div class="accordion-body">
+                                        <table class="table table-sm spec-table">
+                                            <tr><td>Operating System</td><td th:text="${phone.os}">Android 15</td></tr>
+                                            <tr><td>5G Support</td><td th:text="${phone.fiveG ? 'Yes' : 'No'}">Yes</td></tr>
+                                            <tr><td>Wi-Fi</td><td th:text="${phone.wifi}">Wi-Fi 7</td></tr>
+                                            <tr><td>Bluetooth</td><td th:text="${phone.bluetooth}">5.4</td></tr>
+                                            <tr><td>NFC</td><td th:text="${phone.nfc ? 'Yes' : 'No'}">Yes</td></tr>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Build & Dimensions -->
+                            <div class="accordion-item border-0">
+                                <h2 class="accordion-header" id="headingDesign">
+                                    <button class="accordion-button fw-bold collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseDesign">
+                                        <i class="bi bi-shield-check me-2 text-primary"></i> Design &amp; Build
+                                    </button>
+                                </h2>
+                                <div id="collapseDesign" class="accordion-collapse collapse">
+                                    <div class="accordion-body">
+                                        <table class="table table-sm spec-table">
+                                            <tr><td>Water Resistance</td><td th:text="${phone.waterResistance}">IP68</td></tr>
+                                            <tr><td>Weight</td><td th:text="${phone.weight}">218g</td></tr>
+                                            <tr><td>Available Colors</td><td th:text="${phone.colors}">Titanium Black, Titanium Gray</td></tr>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right: Verdict Engine Breakdown & Pros/Cons -->
+                <div class="col-lg-5">
+                    <!-- Verdict Engine Score Breakdown Card -->
+                    <div class="verdict-card mb-4">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h4 class="fw-bold mb-0"><i class="bi bi-speedometer2 text-primary me-2"></i> Verdict Engine</h4>
+                            <span class="badge bg-primary rounded-pill px-3 py-2 fw-bold" th:text="${verdict.overallScore} + ' / 10'">9.5 / 10</span>
+                        </div>
+                        <p class="text-secondary small mb-4">Weighted aggregate calculated from lab benchmarks and user ratings:</p>
+
+                        <!-- Score Bars -->
+                        <div class="verdict-score-bar">
+                            <div class="score-label">
+                                <span class="label">Performance (25%)</span>
+                                <span class="value" th:text="${verdict.performanceScore} + ' / 10'">9.5/10</span>
+                            </div>
+                            <div class="progress">
+                                <div class="progress-bar bg-excellent" role="progressbar" th:style="'width: ' + (${verdict.performanceScore} * 10) + '%;'"></div>
+                            </div>
+                        </div>
+
+                        <div class="verdict-score-bar">
+                            <div class="score-label">
+                                <span class="label">Camera &amp; Video (20%)</span>
+                                <span class="value" th:text="${verdict.cameraScore} + ' / 10'">9.6/10</span>
+                            </div>
+                            <div class="progress">
+                                <div class="progress-bar bg-excellent" role="progressbar" th:style="'width: ' + (${verdict.cameraScore} * 10) + '%;'"></div>
+                            </div>
+                        </div>
+
+                        <div class="verdict-score-bar">
+                            <div class="score-label">
+                                <span class="label">Battery &amp; Charging (15%)</span>
+                                <span class="value" th:text="${verdict.batteryScore} + ' / 10'">8.8/10</span>
+                            </div>
+                            <div class="progress">
+                                <div class="progress-bar bg-good" role="progressbar" th:style="'width: ' + (${verdict.batteryScore} * 10) + '%;'"></div>
+                            </div>
+                        </div>
+
+                        <div class="verdict-score-bar">
+                            <div class="score-label">
+                                <span class="label">Display Quality (15%)</span>
+                                <span class="value" th:text="${verdict.displayScore} + ' / 10'">9.8/10</span>
+                            </div>
+                            <div class="progress">
+                                <div class="progress-bar bg-excellent" role="progressbar" th:style="'width: ' + (${verdict.displayScore} * 10) + '%;'"></div>
+                            </div>
+                        </div>
+
+                        <div class="verdict-score-bar">
+                            <div class="score-label">
+                                <span class="label">Value for Money (15%)</span>
+                                <span class="value" th:text="${verdict.valueScore} + ' / 10'">7.6/10</span>
+                            </div>
+                            <div class="progress">
+                                <div class="progress-bar bg-average" role="progressbar" th:style="'width: ' + (${verdict.valueScore} * 10) + '%;'"></div>
+                            </div>
+                        </div>
+
+                        <div class="verdict-score-bar">
+                            <div class="score-label">
+                                <span class="label">User Community Rating (10%)</span>
+                                <span class="value" th:text="${verdict.userRatingScore} + ' / 10'">9.0/10</span>
+                            </div>
+                            <div class="progress">
+                                <div class="progress-bar bg-good" role="progressbar" th:style="'width: ' + (${verdict.userRatingScore} * 10) + '%;'"></div>
+                            </div>
+                        </div>
+
+                        <div class="verdict-text" th:classappend="${verdict.verdictClass}" th:text="${verdict.verdictText}">
+                            Excellent — Highly Recommended
+                        </div>
+                    </div>
+
+                    <!-- Pros and Cons Card -->
+                    <div class="bg-white p-4 rounded-4 border shadow-sm">
+                        <h5 class="fw-bold mb-3"><i class="bi bi-check2-circle text-success me-2"></i> Highlights &amp; Trade-offs</h5>
+
+                        <div class="mb-3">
+                            <h6 class="text-success fw-bold small text-uppercase mb-2"><i class="bi bi-check-lg me-1"></i> The Good (Pros)</h6>
+                            <ul class="pros-list">
+                                <li th:each="pro : ${phone.getProsList()}">
+                                    <i class="bi bi-check-circle-fill"></i>
+                                    <span th:text="${pro}">Pro detail</span>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <div>
+                            <h6 class="text-danger fw-bold small text-uppercase mb-2"><i class="bi bi-x-lg me-1"></i> The Bad (Cons)</h6>
+                            <ul class="cons-list">
+                                <li th:each="con : ${phone.getConsList()}">
+                                    <i class="bi bi-x-circle-fill"></i>
+                                    <span th:text="${con}">Con detail</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Reviews Section -->
+    <section class="section py-5 bg-white border-top" id="reviews-section">
+        <div class="container">
+            <div class="row g-5">
+                <!-- User Reviews List -->
+                <div class="col-lg-7">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h3 class="fw-bold mb-0">Community Reviews</h3>
+                        <span class="badge bg-secondary rounded-pill px-3 py-2" th:text="${reviews.size()} + ' reviews'">2 reviews</span>
+                    </div>
+
+                    <div class="empty-state bg-light rounded-4 p-4 text-center" th:if="${reviews.empty}">
+                        <i class="bi bi-chat-square-dots text-secondary fs-1"></i>
+                        <h5 class="mt-3">No reviews yet</h5>
+                        <p class="text-muted small">Be the first to share your experience with this smartphone!</p>
+                    </div>
+
+                    <div class="d-flex flex-column gap-3" th:unless="${reviews.empty}">
+                        <div class="review-card" th:each="review : ${reviews}">
+                            <div class="review-header">
+                                <div>
+                                    <div class="star-rating mb-1">
+                                        <span th:each="i : ${#numbers.sequence(1, review.rating)}"><i class="bi bi-star-fill"></i></span>
+                                        <span th:if="${review.rating < 5}" th:each="i : ${#numbers.sequence(review.rating + 1, 5)}"><i class="bi bi-star"></i></span>
+                                    </div>
+                                    <h5 class="review-title mb-0" th:text="${review.title}">Title</h5>
+                                </div>
+                                <span class="verified-badge"><i class="bi bi-patch-check-fill me-1"></i> Verified</span>
+                            </div>
+                            <p class="review-text" th:text="${review.comment}">Comment</p>
+                            <div class="review-meta border-top pt-2">
+                                <span class="fw-bold text-dark" th:text="${review.user != null ? review.user.name : 'Anonymous Buyer'}">User Name</span>
+                                <span class="ms-auto" th:text="${#temporals.format(review.createdAt, 'dd MMM yyyy')}">Date</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Submit Review Form -->
+                <div class="col-lg-5">
+                    <div class="bg-light p-4 rounded-4 border shadow-sm sticky-top" style="top: 90px;">
+                        <h4 class="fw-bold mb-2">Write a Review</h4>
+                        <p class="text-secondary small mb-4">Help the community make an informed verdict on this smartphone.</p>
+
+                        <form th:action="@{/phones/{phoneId}/reviews(phoneId=${phone.id})}" th:object="${reviewDTO}" method="post">
+                            <!-- Star Rating Selector -->
+                            <div class="mb-3">
+                                <label class="form-label fw-bold small">Rating (1 to 5 Stars)</label>
+                                <div class="star-rating-input">
+                                    <input type="radio" id="star5" name="rating" value="5" th:field="*{rating}" checked><label for="star5" title="5 stars"><i class="bi bi-star-fill"></i></label>
+                                    <input type="radio" id="star4" name="rating" value="4" th:field="*{rating}"><label for="star4" title="4 stars"><i class="bi bi-star-fill"></i></label>
+                                    <input type="radio" id="star3" name="rating" value="3" th:field="*{rating}"><label for="star3" title="3 stars"><i class="bi bi-star-fill"></i></label>
+                                    <input type="radio" id="star2" name="rating" value="2" th:field="*{rating}"><label for="star2" title="2 stars"><i class="bi bi-star-fill"></i></label>
+                                    <input type="radio" id="star1" name="rating" value="1" th:field="*{rating}"><label for="star1" title="1 star"><i class="bi bi-star-fill"></i></label>
+                                </div>
+                            </div>
+
+                            <!-- Review Title -->
+                            <div class="mb-3">
+                                <label class="form-label fw-bold small">Review Headline</label>
+                                <input type="text" class="form-control" th:field="*{title}" placeholder="e.g. Best battery life I have ever tested" required>
+                            </div>
+
+                            <!-- Review Comment -->
+                            <div class="mb-4">
+                                <label class="form-label fw-bold small">Detailed Review</label>
+                                <textarea class="form-control" th:field="*{comment}" rows="4" placeholder="Share your experience regarding battery, cameras, display, software, or gaming..." required></textarea>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary-custom w-100">
+                                <i class="bi bi-send me-1"></i> Submit Review
+                            </button>
+                            <small class="text-muted d-block text-center mt-2" style="font-size: 0.75rem;">
+                                Submitted reviews will appear immediately upon admin approval.
+                            </small>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <div th:replace="~{fragments/footer :: footer}"></div>
+
+    <!-- Bootstrap 5 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom JS -->
+    <script th:src="@{/js/main.js}"></script>
+</body>
+</html>

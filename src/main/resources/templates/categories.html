@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smartphone Categories &amp; Rankings - PhoneVerdict</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <!-- Custom Theme CSS -->
+    <link th:href="@{/css/style.css}" rel="stylesheet">
+</head>
+<body>
+
+    <!-- Header -->
+    <div th:replace="~{fragments/header :: header}"></div>
+
+    <!-- Page Header -->
+    <div class="page-header text-center">
+        <div class="container">
+            <h1>Ranked Categories</h1>
+            <p>Targeted verdicts based on what matters most to your daily smartphone usage</p>
+        </div>
+    </div>
+
+    <div class="container mb-5">
+        <!-- 1. Best Overall -->
+        <div class="category-section">
+            <div class="category-header">
+                <span class="category-icon text-warning">🏆</span>
+                <h3>Best Overall Flagships</h3>
+                <a th:href="@{/categories/best-overall}" class="btn btn-sm btn-outline-primary ms-auto rounded-pill">View All</a>
+            </div>
+            <div class="row g-4">
+                <div class="col-lg-4 col-md-6" th:each="phone : ${bestOverall}">
+                    <div class="phone-card">
+                        <div class="card-img-container position-relative">
+                            <span class="badge bg-primary position-absolute top-0 end-0 m-3" th:text="${phone.overallScore} + ' / 10'">9.8 / 10</span>
+                            <img th:src="${phone.imageUrl}" th:alt="${phone.model}">
+                        </div>
+                        <div class="card-body">
+                            <span class="brand-badge" th:text="${phone.brand}">Brand</span>
+                            <h5 class="phone-name" th:text="${phone.model}">Model</h5>
+                            <div class="phone-price" th:text="'₹' + ${#numbers.formatDecimal(phone.price, 1, 'COMMA', 0, 'POINT')}">₹1,34,999</div>
+                            <div class="card-actions mt-3">
+                                <a th:href="@{/phones/{id}(id=${phone.id})}" class="btn btn-primary-custom">View Details</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. Best Camera -->
+        <div class="category-section mt-5">
+            <div class="category-header">
+                <span class="category-icon text-primary">📸</span>
+                <h3>Best Camera &amp; Photography</h3>
+                <a th:href="@{/categories/best-camera}" class="btn btn-sm btn-outline-primary ms-auto rounded-pill">View All</a>
+            </div>
+            <div class="row g-4">
+                <div class="col-lg-4 col-md-6" th:each="phone : ${bestCamera}">
+                    <div class="phone-card">
+                        <div class="card-img-container position-relative">
+                            <span class="badge bg-success position-absolute top-0 end-0 m-3" th:text="'Camera: ' + ${phone.cameraScore} + '/10'">Camera: 9.8</span>
+                            <img th:src="${phone.imageUrl}" th:alt="${phone.model}">
+                        </div>
+                        <div class="card-body">
+                            <span class="brand-badge" th:text="${phone.brand}">Brand</span>
+                            <h5 class="phone-name" th:text="${phone.model}">Model</h5>
+                            <small class="text-secondary d-block mb-2"><i class="bi bi-camera me-1"></i> <span th:text="${phone.mainCamera} + ' | ' + ${phone.telephotoCamera}">50MP</span></small>
+                            <div class="phone-price" th:text="'₹' + ${#numbers.formatDecimal(phone.price, 1, 'COMMA', 0, 'POINT')}">₹94,999</div>
+                            <div class="card-actions mt-3">
+                                <a th:href="@{/phones/{id}(id=${phone.id})}" class="btn btn-primary-custom">View Details</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. Best Gaming & Performance -->
+        <div class="category-section mt-5">
+            <div class="category-header">
+                <span class="category-icon text-danger">🎮</span>
+                <h3>Best For Gaming &amp; Extreme Performance</h3>
+                <a th:href="@{/categories/best-gaming}" class="btn btn-sm btn-outline-primary ms-auto rounded-pill">View All</a>
+            </div>
+            <div class="row g-4">
+                <div class="col-lg-4 col-md-6" th:each="phone : ${bestGaming}">
+                    <div class="phone-card">
+                        <div class="card-img-container position-relative">
+                            <span class="badge bg-danger position-absolute top-0 end-0 m-3" th:text="'Perf: ' + ${phone.performanceScore} + '/10'">Perf: 9.7</span>
+                            <img th:src="${phone.imageUrl}" th:alt="${phone.model}">
+                        </div>
+                        <div class="card-body">
+                            <span class="brand-badge" th:text="${phone.brand}">Brand</span>
+                            <h5 class="phone-name" th:text="${phone.model}">Model</h5>
+                            <small class="text-secondary d-block mb-2"><i class="bi bi-cpu me-1"></i> <span th:text="${phone.processor} + ' (' + ${phone.ram} + ')'">Processor</span></small>
+                            <div class="phone-price" th:text="'₹' + ${#numbers.formatDecimal(phone.price, 1, 'COMMA', 0, 'POINT')}">₹69,999</div>
+                            <div class="card-actions mt-3">
+                                <a th:href="@{/phones/{id}(id=${phone.id})}" class="btn btn-primary-custom">View Details</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 4. Best Battery & Charging -->
+        <div class="category-section mt-5">
+            <div class="category-header">
+                <span class="category-icon text-success">🔋</span>
+                <h3>Best Battery Endurance &amp; Fast Charging</h3>
+                <a th:href="@{/categories/best-battery}" class="btn btn-sm btn-outline-primary ms-auto rounded-pill">View All</a>
+            </div>
+            <div class="row g-4">
+                <div class="col-lg-4 col-md-6" th:each="phone : ${bestBattery}">
+                    <div class="phone-card">
+                        <div class="card-img-container position-relative">
+                            <span class="badge bg-success position-absolute top-0 end-0 m-3" th:text="'Battery: ' + ${phone.batteryScore} + '/10'">Battery: 9.8</span>
+                            <img th:src="${phone.imageUrl}" th:alt="${phone.model}">
+                        </div>
+                        <div class="card-body">
+                            <span class="brand-badge" th:text="${phone.brand}">Brand</span>
+                            <h5 class="phone-name" th:text="${phone.model}">Model</h5>
+                            <small class="text-secondary d-block mb-2"><i class="bi bi-lightning-charge me-1"></i> <span th:text="${phone.battery} + ' (' + ${phone.chargingSpeed} + ')'">6000mAh</span></small>
+                            <div class="phone-price" th:text="'₹' + ${#numbers.formatDecimal(phone.price, 1, 'COMMA', 0, 'POINT')}">₹69,999</div>
+                            <div class="card-actions mt-3">
+                                <a th:href="@{/phones/{id}(id=${phone.id})}" class="btn btn-primary-custom">View Details</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 5. Best Display -->
+        <div class="category-section mt-5">
+            <div class="category-header">
+                <span class="category-icon text-info">📱</span>
+                <h3>Best Display Quality</h3>
+                <a th:href="@{/categories/best-display}" class="btn btn-sm btn-outline-primary ms-auto rounded-pill">View All</a>
+            </div>
+            <div class="row g-4">
+                <div class="col-lg-4 col-md-6" th:each="phone : ${bestDisplay}">
+                    <div class="phone-card">
+                        <div class="card-img-container position-relative">
+                            <span class="badge bg-info text-dark position-absolute top-0 end-0 m-3" th:text="'Screen: ' + ${phone.displayScore} + '/10'">Screen: 9.8</span>
+                            <img th:src="${phone.imageUrl}" th:alt="${phone.model}">
+                        </div>
+                        <div class="card-body">
+                            <span class="brand-badge" th:text="${phone.brand}">Brand</span>
+                            <h5 class="phone-name" th:text="${phone.model}">Model</h5>
+                            <small class="text-secondary d-block mb-2"><i class="bi bi-aspect-ratio me-1"></i> <span th:text="${phone.displaySize} + ' ' + ${phone.refreshRate}">Display</span></small>
+                            <div class="phone-price" th:text="'₹' + ${#numbers.formatDecimal(phone.price, 1, 'COMMA', 0, 'POINT')}">₹1,34,999</div>
+                            <div class="card-actions mt-3">
+                                <a th:href="@{/phones/{id}(id=${phone.id})}" class="btn btn-primary-custom">View Details</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 6. Best Value for Money -->
+        <div class="category-section mt-5">
+            <div class="category-header">
+                <span class="category-icon text-warning">💰</span>
+                <h3>Best Value for Money</h3>
+                <a th:href="@{/categories/best-value}" class="btn btn-sm btn-outline-primary ms-auto rounded-pill">View All</a>
+            </div>
+            <div class="row g-4">
+                <div class="col-lg-4 col-md-6" th:each="phone : ${bestValue}">
+                    <div class="phone-card">
+                        <div class="card-img-container position-relative">
+                            <span class="badge bg-warning text-dark position-absolute top-0 end-0 m-3" th:text="'Value: ' + ${phone.valueScore} + '/10'">Value: 9.6</span>
+                            <img th:src="${phone.imageUrl}" th:alt="${phone.model}">
+                        </div>
+                        <div class="card-body">
+                            <span class="brand-badge" th:text="${phone.brand}">Brand</span>
+                            <h5 class="phone-name" th:text="${phone.model}">Model</h5>
+                            <small class="text-secondary d-block mb-2"><i class="bi bi-tag me-1"></i> Flagship killer performance for budget</small>
+                            <div class="phone-price" th:text="'₹' + ${#numbers.formatDecimal(phone.price, 1, 'COMMA', 0, 'POINT')}">₹37,999</div>
+                            <div class="card-actions mt-3">
+                                <a th:href="@{/phones/{id}(id=${phone.id})}" class="btn btn-primary-custom">View Details</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div th:replace="~{fragments/footer :: footer}"></div>
+
+    <!-- Bootstrap 5 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom JS -->
+    <script th:src="@{/js/main.js}"></script>
+</body>
+</html>

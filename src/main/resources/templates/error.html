@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Error - PhoneVerdict</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <!-- Custom Theme CSS -->
+    <link th:href="@{/css/style.css}" rel="stylesheet">
+</head>
+<body class="bg-light">
+
+    <!-- Header -->
+    <div th:replace="~{fragments/header :: header}"></div>
+
+    <div class="container text-center py-5 my-5">
+        <div class="bg-white p-5 rounded-4 shadow-sm border max-w-50 mx-auto" style="max-width: 550px;">
+            <div class="display-1 text-primary fw-bold mb-3">
+                <i class="bi bi-exclamation-octagon text-danger"></i>
+            </div>
+            <h2 class="fw-bold mb-2">Something Went Wrong</h2>
+            <p class="text-secondary mb-4">
+                The page you are trying to access might have been moved, removed, or is temporarily unavailable.
+            </p>
+            <div class="d-flex justify-content-center gap-3">
+                <a th:href="@{/}" class="btn btn-primary-custom px-4">
+                    <i class="bi bi-house-door me-1"></i> Back to Homepage
+                </a>
+                <a th:href="@{/phones}" class="btn btn-outline-secondary rounded-pill px-4">
+                    <i class="bi bi-phone me-1"></i> Browse Phones
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div th:replace="~{fragments/footer :: footer}"></div>
+
+    <!-- Bootstrap 5 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom JS -->
+    <script th:src="@{/js/main.js}"></script>
+</body>
+</html>

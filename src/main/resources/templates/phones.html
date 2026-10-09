@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>All Smartphones - PhoneVerdict</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <!-- Custom Theme CSS -->
+    <link th:href="@{/css/style.css}" rel="stylesheet">
+</head>
+<body>
+
+    <!-- Header -->
+    <div th:replace="~{fragments/header :: header}"></div>
+
+    <!-- Page Header -->
+    <div class="page-header text-center">
+        <div class="container">
+            <h1>All Smartphones</h1>
+            <p>Filter by brand, budget, and rankings to find your next daily driver</p>
+        </div>
+    </div>
+
+    <div class="container mb-5">
+        <div class="row g-4">
+            <!-- Filter Sidebar -->
+            <div class="col-lg-3">
+                <div class="filter-card">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="mb-0"><i class="bi bi-funnel me-1"></i> Filter Phones</h5>
+                        <a th:href="@{/phones}" class="text-primary small fw-semibold">Reset</a>
+                    </div>
+
+                    <form th:action="@{/phones}" method="get" id="filterForm">
+                        <!-- Brand Filter -->
+                        <div class="mb-4">
+                            <label class="form-label">Brand</label>
+                            <select name="brand" class="form-select" onchange="document.getElementById('filterForm').submit()">
+                                <option value="" th:selected="${selectedBrand == null || selectedBrand == ''}">All Brands</option>
+                                <option th:each="b : ${brands}" th:value="${b}" th:text="${b}" th:selected="${selectedBrand == b}">Samsung</option>
+                            </select>
+                        </div>
+
+                        <!-- Price Ranges -->
+                        <div class="mb-4">
+                            <label class="form-label">Price Range</label>
+                            <div class="d-flex flex-column gap-1">
+                                <a th:href="@{/phones(brand=${selectedBrand}, sort=${selectedSort}, maxPrice=20000)}"
+                                   class="price-filter-btn" th:classappend="${maxPrice == 20000} ? 'active' : ''">
+                                    Under ₹20,000
+                                </a>
+                                <a th:href="@{/phones(brand=${selectedBrand}, sort=${selectedSort}, minPrice=20000, maxPrice=40000)}"
+                                   class="price-filter-btn" th:classappend="${minPrice == 20000 && maxPrice == 40000} ? 'active' : ''">
+                                    ₹20,000 – ₹40,000
+                                </a>
+                                <a th:href="@{/phones(brand=${selectedBrand}, sort=${selectedSort}, minPrice=40000, maxPrice=60000)}"
+                                   class="price-filter-btn" th:classappend="${minPrice == 40000 && maxPrice == 60000} ? 'active' : ''">
+                                    ₹40,000 – ₹60,000
+                                </a>
+                                <a th:href="@{/phones(brand=${selectedBrand}, sort=${selectedSort}, minPrice=60000)}"
+                                   class="price-filter-btn" th:classappend="${minPrice == 60000 && maxPrice == null} ? 'active' : ''">
+                                    Above ₹60,000
+                                </a>
+                            </div>
+                        </div>
+
+                        <!-- Sort By -->
+                        <div class="mb-4">
+                            <label class="form-label">Sort By</label>
+                            <select name="sort" class="form-select" onchange="document.getElementById('filterForm').submit()">
+                                <option value="latest" th:selected="${selectedSort == 'latest'}">Latest Phones</option>
+                                <option value="rating" th:selected="${selectedSort == 'rating'}">Highest Rated Verdict</option>
+                                <option value="price-asc" th:selected="${selectedSort == 'price-asc'}">Price: Low to High</option>
+                                <option value="price-desc" th:selected="${selectedSort == 'price-desc'}">Price: High to Low</option>
+                            </select>
+                        </div>
+
+                        <!-- Hidden min/max price inputs to preserve selection -->
+                        <input type="hidden" name="minPrice" th:if="${minPrice != null}" th:value="${minPrice}">
+                        <input type="hidden" name="maxPrice" th:if="${maxPrice != null}" th:value="${maxPrice}">
+
+                        <button type="submit" class="btn btn-primary-custom w-100">
+                            Apply Filters
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Phone Cards Grid -->
+            <div class="col-lg-9">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <span class="text-secondary small">
+                        Showing <strong th:text="${phones.size()}">12</strong> smartphones
+                    </span>
+                </div>
+
+                <!-- Empty state if no phones found -->
+                <div class="empty-state bg-white rounded-4 shadow-sm" th:if="${phones.empty}">
+                    <i class="bi bi-phone-vibrate"></i>
+                    <h4>No Smartphones Found</h4>
+                    <p>Try adjusting your brand or price filters to see more results.</p>
+                    <a th:href="@{/phones}" class="btn btn-primary-custom mt-2">Reset All Filters</a>
+                </div>
+
+                <div class="row g-4" th:unless="${phones.empty}">
+                    <div class="col-lg-4 col-md-6" th:each="phone : ${phones}">
+                        <div class="phone-card">
+                            <div class="card-img-container">
+                                <img th:src="${phone.imageUrl}" th:alt="${phone.model}">
+                            </div>
+                            <div class="card-body">
+                                <span class="brand-badge" th:text="${phone.brand}">Brand</span>
+                                <h4 class="phone-name" th:text="${phone.model}">Model Name</h4>
+                                <div class="phone-price" th:text="'₹' + ${#numbers.formatDecimal(phone.price, 1, 'COMMA', 0, 'POINT')}">₹69,999</div>
+
+                                <div class="d-flex align-items-center gap-2 mb-2">
+                                    <div class="star-rating">
+                                        <i class="bi bi-star-fill text-warning"></i>
+                                        <span class="fw-bold text-dark small" th:text="${phone.averageUserRating}">4.5</span>
+                                    </div>
+                                    <span class="review-count" th:text="'(' + ${phone.reviewCount} + ' reviews)'">(12)</span>
+                                    <span class="ms-auto badge bg-light text-primary border" th:text="${phone.overallScore} + ' / 10'">9.2 / 10</span>
+                                </div>
+
+                                <div class="phone-specs">
+                                    <span><i class="bi bi-cpu"></i> <span th:text="${phone.processor}">Processor</span></span><br>
+                                    <span><i class="bi bi-memory"></i> <span th:text="${phone.ram + ' / ' + phone.storage}">RAM/Storage</span></span>
+                                    <span><i class="bi bi-battery-charging"></i> <span th:text="${phone.battery}">5000 mAh</span></span>
+                                </div>
+
+                                <div class="card-actions">
+                                    <a th:href="@{/phones/{id}(id=${phone.id})}" class="btn btn-primary-custom">
+                                        View Details
+                                    </a>
+                                    <button type="button" class="btn btn-outline-secondary"
+                                            th:onclick="addToCompare([[${phone.id}]], [[${phone.model}]], [[${phone.brand}]], [[${phone.imageUrl}]])">
+                                        <i class="bi bi-plus-lg"></i> Compare
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div th:replace="~{fragments/footer :: footer}"></div>
+
+    <!-- Bootstrap 5 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom JS -->
+    <script th:src="@{/js/main.js}"></script>
+</body>
+</html>
